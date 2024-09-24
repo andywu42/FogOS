@@ -17,8 +17,10 @@ void
 delete(char* path)
 {
   if(unlink(path) < 0) {
-    fprintf(2, "rm: %s failed to delete\n", path);
-    exit(1);
+  	if (!f) {
+  	  fprintf(2, "rm: %s failed to delete\n", path);
+  	  exit(1);
+  	}
   }
   
   if (v) {
