@@ -3,6 +3,15 @@
 #include "user/user.h"
 #include "kernel/fs.h"
 
+const char *usageMsg = "Usage: rm file/directory.\n"
+"Possible flags: -v, -r, -f, -i, -d\n"
+"-v file/directory\n"
+"-r directory\n"
+"-f file/directory\n"
+"-i file/directory\n"
+"-d directory\n";
+
+
 #define MAX_PATH 512
 
 // Boolean variables for flag processing, defaulted to false
@@ -95,7 +104,7 @@ rm(char *path)
 			} else if (answer[0] == 'n') {
 				return;
 			} else {
-				printf("Invalid answer.\n");
+				fprintf(2, "Invalid answer.\n");
 			}
 		}
 	}
@@ -109,7 +118,7 @@ rm(char *path)
 	// Directory processing
 	struct stat st;
 	if (stat(path, &st) < 0) {
-		fprintf(2, "rm: stat(%s) failed\n", path);
+		fprintf(2, "rm: (%s) does not exist\n", path);
 	}
 	if (st.type == T_DIR) {
 		// Recursively delete all files/directories
@@ -143,13 +152,14 @@ main(int argc, char *argv[])
   int start = 1;
 
   if(argc < 2){
-    fprintf(2, "Usage: rm files...\n");
+    fprintf(2, "%s", usageMsg);
     exit(1);
   }
 
   // Parse the flags
   for (index = 1; index < argc; index++) {
   	if (argv[index][0] == '-') {	// Check if argv is even a flag
+		// Read the flag(s)
   		char *flag = argv[index] + 1;
   		while (*flag) {
   			switch (*flag) {
@@ -169,10 +179,15 @@ main(int argc, char *argv[])
   			  		d = 1;
   			  		break;
   			  	default:
-  			  		fprintf(2, "rm: invalid flag '%s'\n", *flag);
+  			  		fprintf(2, "rm: invalid flag\n");
   			  		exit(1);
   			  	}
   			flag++;
+  		}
+  		// Check if there is path after flag
+  		if (index + 1 >= argc) {
+  			fprintf(2, "No path found after flag.\n");
+  			exit(1);
   		}
   	} else {	// Not a flag
 		start = index;

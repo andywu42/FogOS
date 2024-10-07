@@ -1,6 +1,8 @@
 K=kernel
 U=user
 
+DIR = example empty
+
 OBJS = \
   $K/entry.o \
   $K/start.o \
@@ -133,8 +135,8 @@ UPROGS=\
 	$U/_wc\
 	$U/_zombie\
 
-fs.img: mkfs/mkfs README.md $(UPROGS)
-	mkfs/mkfs fs.img README.md $(UPROGS)
+fs.img: mkfs/mkfs README.md $(UPROGS) $(DIR) test4.txt
+	mkfs/mkfs fs.img README.md $(UPROGS) $(DIR) test4.txt
 
 -include kernel/*.d user/*.d
 
@@ -170,4 +172,3 @@ qemu: $K/kernel fs.img
 qemu-gdb: $K/kernel .gdbinit fs.img
 	@echo "*** Now run 'gdb' in another window." 1>&2
 	$(QEMU) $(QEMUOPTS) -S $(QEMUGDB)
-
